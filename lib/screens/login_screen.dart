@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:rive/rive.dart';
+import 'package:flutter/material.dart'; //widgets y estilos de flutter
+import 'package:rive/rive.dart'; //para usar las animaciones Rive
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -9,10 +9,10 @@ class LoginScreen extends StatefulWidget {
 } //Si se quita la pantalla no existe
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool _isPasswordVisible =
-      false; //Para controlar la visiblilidad de la contraseña, si se quita no podrá mostrar u ocultar
+  bool _isPasswordVisible = false;
+  //Para controlar la visiblilidad de la contraseña, si se quita no podrá mostrar u ocultar
 
-  StateMachineController? controller;
+  StateMachineController? controller; //controla la animaci´pon de Rive
 
   // Cerebro de la lógica de las animaciones
   //SMI: State Machine Input
@@ -20,6 +20,27 @@ class _LoginScreenState extends State<LoginScreen> {
   SMIBool? isHandsUp; //se tapa los ojos
   SMITrigger? trigSucess; //se emociona
   SMITrigger? trigFail; //Se pone triste
+
+  //1. crear variables focusNotde
+  final emailFocus = FocusNode();
+  final passFocus = FocusNode();
+
+  //2. listeners (oyentes/chismoso)
+  //aqui se crean los focos
+  @override
+  void initState() {
+    super.initState();
+    emailFocus.addListener(() {
+      if (emailFocus.hasFocus) {
+        //Manos abajo en email
+        isHandsUp?.change(false);
+      }
+    });
+    passFocus.addListener(() {
+      //Manos arriba en password
+      isHandsUp?.change(passFocus.hasFocus);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SafeArea(
         //Evita que el contenido se superponga
         child: Padding(
+          //agrega márgenes
           // Margen horizontal, eje x horizontal o derecha izquierda, sino todo se pegaría a los bordes
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
@@ -45,7 +67,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   //Muestra el archivo de animación
                   'assets/animated_login_character.riv',
                   stateMachines: ["Login Machine"], //Al iniciarse
+                  //Conecta el Rive con el código
                   onInit: (artboard) {
+                    //Enlaza la variables de los gestos
                     controller = StateMachineController.fromArtboard(
                       artboard,
                       "Login Machine",
@@ -61,14 +85,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 10),
+
               TextField(
+                //Email
+                focusNode:
+                    emailFocus, //para llamar a los oyentes, asignar el focusnode al textfield
                 onChanged: (value) {
                   if (isHandsUp != null) {
-                    //No tapar los ojos al escribir email
-                    isHandsUp!.change(false);
+                    //Baja las manos
+                    //isHandsUp!.change(false);
                   }
                   if (isChecking == null) return;
-                  //Activa el modo chismoso
+                  //Mueve los ojos
                   isChecking!.change(true);
                 },
                 //Campo de texto
@@ -84,14 +112,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 10),
+
               TextField(
+                //Password
+                focusNode:
+                    passFocus, //para llamar a los oyentes, asignar el focusnode al textfield
                 onChanged: (value) {
                   if (isChecking != null) {
-                    //No tapar los ojos al escribir email
-                    isChecking!.change(false);
+                    //Deja de mirar
+                    //isChecking!.change(false);   //se comenta porque ya no es necesario
                   }
                   if (isHandsUp == null) return;
-                  //Activa el modo chismoso
+                  //Se tapa los ojos
                   isHandsUp!.change(true);
                 },
                 //Para que aparezaca la contraseña del usuraio en móviles
@@ -105,21 +137,25 @@ class _LoginScreenState extends State<LoginScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   suffixIcon: IconButton(
+                    //suffix, para poner un widget al final del Testfield
+                    //IconB, Es el botón para hacer click
                     icon: Icon(
                       _isPasswordVisible
-                          ? Icons.visibility_off
-                          : Icons.visibility,
+                          ? Icons
+                                .visibility_off //Para poder ocultar
+                          : Icons.visibility, //Para poder mostrarla
                     ),
                     onPressed: () {
                       setState(() {
                         _isPasswordVisible = !_isPasswordVisible;
-                      });
+                      }); //actualiza si se ve un signo o el otro
                     },
                   ),
                 ),
               ),
               const SizedBox(height: 10),
               SizedBox(
+                //Para poner la parte de se te olvidó la contraseña?
                 width: size.width,
                 child: const Text(
                   "Forgot your password",
@@ -127,7 +163,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(decoration: TextDecoration.underline),
                 ),
               ),
-              const SizedBox(height: 10), //Para el botón de entrada
+
+              const SizedBox(height: 10), //Para el botón de inicio de sesión
               MaterialButton(
                 minWidth: size.width,
                 height: 50,
@@ -140,10 +177,12 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 10),
               SizedBox(
+                //Muestra la parte de registro
                 width: size.width,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    //Solo dibuja el texto y da la opción de registro
                     const Text("Don't have an account?"),
                     TextButton(
                       onPressed: () {},
@@ -151,7 +190,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         "Register",
                         style: TextStyle(
                           color: Colors.black12,
+                          //en negrita
                           fontWeight: FontWeight.bold,
+                          //subrayado
                           decoration: TextDecoration.underline,
                         ),
                       ),
@@ -164,5 +205,13 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  //4. liberacion de recursos/limpieza de focus
+  @override
+  void dispose() {
+    emailFocus.dispose();
+    passFocus.dispose();
+    super.dispose();
   }
 }
