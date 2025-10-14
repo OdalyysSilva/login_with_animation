@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart'; //widgets y estilos de flutter
 import 'package:rive/rive.dart'; //para usar las animaciones Rive
+//3.1 importar libreria par timer
+import 'dart:async';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,7 +14,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isPasswordVisible = false;
   //Para controlar la visiblilidad de la contraseña, si se quita no podrá mostrar u ocultar
 
-  StateMachineController? controller; //controla la animaci´pon de Rive
+  StateMachineController? controller; //controla la animación de Rive
 
   // Cerebro de la lógica de las animaciones
   //SMI: State Machine Input
@@ -21,9 +23,15 @@ class _LoginScreenState extends State<LoginScreen> {
   SMITrigger? trigSucess; //se emociona
   SMITrigger? trigFail; //Se pone triste
 
+  //2.1 vaariable para recorrido de la mirada
+  SMINumber? numLook; //0..80 en el asset
+
   //1. crear variables focusNotde
   final emailFocus = FocusNode();
   final passFocus = FocusNode();
+
+  //3.2 timer para detener la mirada al dejar de teclear
+  Timer? _typingDebounce;
 
   //2. listeners (oyentes/chismoso)
   //aqui se crean los focos
@@ -33,6 +41,9 @@ class _LoginScreenState extends State<LoginScreen> {
     emailFocus.addListener(() {
       if (emailFocus.hasFocus) {
         //Manos abajo en email
+        isHandsUp?.change(false);
+        //2.2 mirada neutral al enofcar email
+        numLook?.value = 50.0;
         isHandsUp?.change(false);
       }
     });
@@ -81,6 +92,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     isHandsUp = controller!.findSMI('isHandsUp');
                     trigSucess = controller!.findSMI('trigSucess');
                     trigFail = controller!.findSMI('trigFail');
+                    //Enlazar variable con la animación
+                    numLook = controller!.findSMI('numLook');
                   },
                 ),
               ),
@@ -94,6 +107,28 @@ class _LoginScreenState extends State<LoginScreen> {
                   if (isHandsUp != null) {
                     //Baja las manos
                     //isHandsUp!.change(false);
+
+                    //2.4 Implementando numlook
+                    //estoy escribiendo
+                    isChecking!.change(true);
+                    //ajuste de limites de 0 a 100
+                    //80 es una medida de calibracion
+                    final look = (value.length / 80.0 * 100.0).clamp(
+                      0.0,
+                      100.0,
+                    );
+                    numLook?.value = look;
+
+                    //3.3 debounce: si vuelve a teclear, reinicia el contador
+                    _typingDebounce
+                        ?.cancel(); //cancela cualquier timer existente
+                    _typingDebounce = Timer(const Duration(seconds: 3), () {
+                      if (!mounted) {
+                        return; //si la pnatlla se cierra
+                      }
+                      //Mirada neutra
+                      isChecking?.change(false);
+                    });
                   }
                   if (isChecking == null) return;
                   //Mueve los ojos
@@ -212,6 +247,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void dispose() {
     emailFocus.dispose();
     passFocus.dispose();
+    _typingDebounce?.cancel();
     super.dispose();
   }
 }
