@@ -80,13 +80,13 @@ lib/
 
 🧮 Subject: Computer Graphics
 
-🧑‍🏫 Professor: RODRIGO FIDEL GAXIOLA SOSA
+🧑‍🏫 Professor: Rodrigo Fidel Gaxiola Sosa
 
 🧑‍💻 Student: Odalys Margely Silva Colli
 
 🏫 Institution: Instituto Tecnológico de Mérida
 
 ## 🖋️ 𝑪𝒓𝒆𝒅𝒊𝒕𝒔
-🧸 Bear animation created by: Bear Trial – Rive Marketplace
+🧸 Bear animation created by: [Bear Trial – Rive Marketplace](https://rive.app/marketplace/2735-5610-bear-trial/)
 
 💻 Project developed for: Computer Graphics course, Instituto Tecnológico de Mérida
