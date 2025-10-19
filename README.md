@@ -74,7 +74,25 @@ lib/
 - Reacting while typing
 - Success and error login animations
 
-📸 GIF:
+<p align="center">
+      💤 <strong>𝑰𝒏𝒊𝒕𝒊𝒂𝒍 𝒔𝒄𝒓𝒆𝒆𝒏</strong><br>
+  <img src="assets/1.gif" width="400">
+</p>
+
+<p align="center">
+      👀 <strong>𝑩𝒆𝒂𝒓 𝒍𝒐𝒐𝒌𝒔 𝒘𝒉𝒊𝒍𝒆 𝒕𝒚𝒑𝒊𝒏𝒈 𝒆𝒎𝒂𝒊𝒍</strong><br>
+  <img src="assets/2.gif" width="400">
+      🙈 <strong>𝑩𝒆𝒂𝒓 𝒄𝒐𝒗𝒆𝒓𝒔 𝒊𝒕𝒔 𝒆𝒚𝒆𝒔 𝒘𝒉𝒊𝒍𝒆 𝒕𝒚𝒑𝒊𝒏𝒈 𝒑𝒂𝒔𝒔𝒘𝒐𝒓𝒅</strong><br>
+  <img src="assets/3.gif" width="400">
+</p>
+
+<p align="center">
+      😄 <strong>𝑩𝒆𝒂𝒓 𝒔𝒎𝒊𝒍𝒆𝒔 𝒂𝒇𝒕𝒆𝒓 𝒔𝒖𝒄𝒄𝒆𝒔𝒔𝒇𝒖𝒍 𝒍𝒐𝒈𝒊𝒏</strong><br>
+  <img src="assets/4.gif" width="400">
+      😞 <strong>𝑩𝒆𝒂𝒓 𝒍𝒐𝒐𝒌𝒔 𝒔𝒂𝒅 𝒂𝒇𝒕𝒆𝒓 𝒇𝒂𝒊𝒍𝒆𝒅 𝒍𝒐𝒈𝒊𝒏</strong><br>
+  <img src="assets/5.gif" width="400">
+</p>
+
 
 ## 📚 𝑨𝒄𝒂𝒅𝒆𝒎𝒊𝒄 𝑰𝒏𝒇𝒐𝒓𝒎𝒂𝒕𝒊𝒐𝒏
 
