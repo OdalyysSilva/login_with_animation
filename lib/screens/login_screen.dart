@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
-// 2.3 implementar librería timer
+// 3.1 importar librería timer
 import 'dart:async';
 
 class LoginScreen extends StatefulWidget {
@@ -13,23 +13,28 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   // Declaramos las variables necesarias
   late TextEditingController _userPasswordController;
+  //6.1 Para controlar el estado de craga del botón
+  bool _isLoading = false;
   bool _passwordVisible = false;
-  // Cerebro de la lógica de las animaciones
-  StateMachineController? controller;
+  //Para controlar la visiblilidad de la contraseña, si se quita no podrá mostrar u ocultar
+
+  StateMachineController?
+  controller; // Cerebro de la lógica de las animaciones, controla la animación de Rive
   // SMI State Machine Input
   SMIBool? isCheking;
   SMIBool? isHandsUp;
   SMITrigger? trigFail;
   SMITrigger? trigSuccess;
   // 2.1 Variable de recorrido de la mirada
-  SMINumber? numLook;
+  SMINumber? numLook; //0...80 en el asset
 
   // Focos email y password FocusNode paso 1.1
   final emailFocus = FocusNode();
   final passwordFocus = FocusNode();
   // 3.2 Crear timer para detener la animación al dejar de teclear email
   Timer? _typingDebouncer;
-  //Paso 4.1 Declarar controllers
+
+  //4.1 Declarar controllers
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   //4.2 Errores para mostrar en la UI
@@ -51,7 +56,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   // 4.4 accion al boton login
-  void _onlogin() {
+  void _onlogin() async {
+    //6.2 evita doble tap
+    if (_isLoading) return;
+    setState(() => _isLoading = true);
+
     final email = emailController.text.trim();
     final password = passwordController.text;
 
@@ -72,12 +81,17 @@ class _LoginScreenState extends State<LoginScreen> {
     isHandsUp?.change(false);
     numLook?.value = 50.0; // Mirada neutral
 
+    //6.3 spera para que la animación procece antes los cambios
+    await Future.delayed(const Duration(milliseconds: 100));
     // 4.7 Activar Triggers
     if (eError == null && pError == null) {
       trigSuccess?.fire();
     } else {
       trigFail?.fire();
     }
+    //6.4 Mantiene el spinner visible un segundo
+    await Future.delayed(const Duration(seconds: 1));
+    if (mounted) setState(() => _isLoading = false);
   }
 
   // Listeners oyentes
@@ -90,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
     emailFocus.addListener(() {
       if (emailFocus.hasFocus) {
         isHandsUp?.change(false); //manos abajo email
-        // Mirada neutral al enfocar email
+        //2.2 Mirada neutral al enfocar email
         numLook?.value = 50.0;
         isHandsUp?.change(false); //manos abajo email
       }
@@ -128,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     isHandsUp = controller!.findSMI('isHandsUp');
                     trigSuccess = controller!.findSMI('trigSuccess');
                     trigFail = controller!.findSMI('trigFail');
-                    // paso 2.3 enlazar la variable con la animación
+                    //2.3 enlazar la variable con la animación
                     numLook = controller!.findSMI('numLook');
                   }, // Qué es clamp?? en programación y en la vida
                   // clamp: abrazadera retiene el valor dentro de un rango
@@ -142,15 +156,20 @@ class _LoginScreenState extends State<LoginScreen> {
                 // 4.8 enlazar controldores al texfield
                 controller: emailController,
                 onChanged: (value) {
+                  //6.6 Para actualizar el error en vivo
+                  setState(() {
+                    emailError = isValidEmail(value) ? null : 'Email no válido';
+                  });
+                  //2.4 Implementando Numlook
                   // estoy escribiendo
                   isCheking!.change(true);
                   // ajuste de limite 0 a 100
                   // 80 es medida de calibración
                   final look = (value.length / 80.0 * 100.0)
-                      .clamp(0, 100)
+                      .clamp(0.0, 100.0)
                       .toDouble();
                   numLook?.value = look;
-                  // Paso 3.3 Debounce: si vuelve a teclear, reinicia el timer
+                  //3.3 Debounce: si vuelve a teclear, reinicia el timer o contador
                   _typingDebouncer?.cancel(); // cancela un timer existente
                   _typingDebouncer = Timer(const Duration(seconds: 4), () {
                     if (!mounted) {
@@ -186,6 +205,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 focusNode: passwordFocus,
                 controller: passwordController,
                 onChanged: (value) {
+                  //6.6 Para actualizar el error en vivo
+                  setState(() {
+                    passwordError = isValidPassword(value)
+                        ? null
+                        : 'Mínimo 8 caracteres, una mayúscula, una minúscula, un número y un especial';
+                  });
                   if (isCheking != null) {
                     // No tapar los ojos al escribir mail
                     //isHandsUp!.change(false);
@@ -240,7 +265,20 @@ class _LoginScreenState extends State<LoginScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 onPressed: _onlogin,
-                child: Text('Login', style: TextStyle(color: Colors.white)),
+                child:
+                    _isLoading //6.5 sustituir
+                    ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 3,
+                        ),
+                      )
+                    : const Text(
+                        'Login',
+                        style: TextStyle(color: Colors.white),
+                      ),
               ),
               const SizedBox(height: 10),
               SizedBox(
@@ -278,7 +316,7 @@ class _LoginScreenState extends State<LoginScreen> {
     _userPasswordController.dispose();
     emailFocus.dispose();
     passwordFocus.dispose();
-    _typingDebouncer?.cancel();
+    _typingDebouncer?.cancel(); //3.4
     super.dispose();
   }
 }
