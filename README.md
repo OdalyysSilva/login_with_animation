@@ -80,7 +80,7 @@ lib/
     <tr>
       <td align="center" width="420">
         😴 <strong>Initial screen</strong><br>
-        <img src="assets/1.gif" width="400">
+        <img src="assets/1.gif" width="300">
       </td>
     </tr>
   </table>
@@ -92,11 +92,11 @@ lib/
     <tr>
       <td align="center" width="420">
         👀 <strong>Bear looks while typing email</strong><br>
-        <img src="assets/2.gif" width="400">
+        <img src="assets/2.gif" width="300">
       </td>
       <td align="center" width="420">
         🙈 <strong>Bear covers its eyes while typing password</strong><br>
-        <img src="assets/3.gif" width="400">
+        <img src="assets/3.gif" width="300">
       </td>
     </tr>
   </table>
@@ -107,12 +107,12 @@ lib/
   <table>
     <tr>
       <td align="center" width="420">
-        😄 <strong>Bear smiles after successful login</strong><br>
-        <img src="assets/4.gif" width="400">
+        😞 <strong>Bear looks sad after failed login</strong><br>
+        <img src="assets/4.gif" width="300">
       </td>
       <td align="center" width="420">
-        😞 <strong>Bear looks sad after failed login</strong><br>
-        <img src="assets/5.gif" width="400">
+        😄 <strong>Bear smiles after successful login</strong><br>
+        <img src="assets/5.gif" width="300">
       </td>
     </tr>
   </table>
