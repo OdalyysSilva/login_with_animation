@@ -13,7 +13,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   // Declaramos las variables necesarias
   late TextEditingController _userPasswordController;
-  //6.1 Para controlar el estado de craga del botón
+  //6.1 Para controlar el estado de carga del botón
   bool _isLoading = false;
   bool _passwordVisible = false;
   //Para controlar la visiblilidad de la contraseña, si se quita no podrá mostrar u ocultar
@@ -95,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   // Listeners oyentes
-
+  //Aquí se ran los focos
   @override
   void initState() {
     super.initState();
@@ -205,24 +205,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 focusNode: passwordFocus,
                 controller: passwordController,
                 onChanged: (value) {
-                  //6.6 Para actualizar el error en vivo
-                  setState(() {
-                    passwordError = isValidPassword(value)
-                        ? null
-                        : 'Mínimo 8 caracteres, una mayúscula, una minúscula, un número y un especial';
-                  });
-                  if (isCheking != null) {
-                    // No tapar los ojos al escribir mail
-                    //isHandsUp!.change(false);
+                  setState(
+                    () {},
+                  ); // <- Esto actualiza la lista de requisitos visualmente
+
+                  passwordError = isValidPassword(value)
+                      ? null
+                      : 'Mínimo 8 caracteres, una mayúscula, una minúscula, un número y un especial';
+
+                  if (isHandsUp != null) {
+                    isHandsUp!.change(true);
                   }
-                  if (isHandsUp == null) return;
-                  // Activa el modo chismoso
-                  isHandsUp!.change(true);
                 },
-                //controller: _userPasswordController,
                 obscureText: !_passwordVisible,
                 decoration: InputDecoration(
-                  errorText: passwordError,
+                  // 6.6 errorText: passwordError,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -244,6 +241,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
+
+              // 6.6 Barra visual que muestra qué le falta a la contraseña
+              const SizedBox(height: 10),
+              PasswordStrengthChecklist(password: passwordController.text),
               SizedBox(height: 10),
               // Texto forgot password
               SizedBox(
@@ -318,5 +319,54 @@ class _LoginScreenState extends State<LoginScreen> {
     passwordFocus.dispose();
     _typingDebouncer?.cancel(); //3.4
     super.dispose();
+  }
+}
+
+//6.7 Correción de errores de la contraseña
+class PasswordStrengthChecklist extends StatelessWidget {
+  final String password;
+  const PasswordStrengthChecklist({super.key, required this.password});
+
+  bool get hasUppercase => password.contains(RegExp(r'[A-Z]'));
+  bool get hasLowercase => password.contains(RegExp(r'[a-z]'));
+  bool get hasNumber => password.contains(RegExp(r'\d'));
+  bool get hasSpecial => password.contains(RegExp(r'[^A-Za-z0-9]'));
+  bool get hasMinLength => password.length >= 8;
+
+  Widget _buildItem(String text, bool condition) {
+    return Row(
+      children: [
+        Icon(
+          condition ? Icons.check_circle : Icons.cancel,
+          color: condition ? Colors.green : Colors.red,
+          size: 18,
+        ),
+        const SizedBox(width: 8),
+        Text(
+          text,
+          style: TextStyle(
+            color: condition ? Colors.green : Colors.red,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (password.isEmpty) {
+      return const SizedBox();
+    } // Oculta mientras no escriba nada
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildItem("Al menos 8 caracteres", hasMinLength),
+        _buildItem("Una letra mayúscula", hasUppercase),
+        _buildItem("Una letra minúscula", hasLowercase),
+        _buildItem("Un número", hasNumber),
+        _buildItem("Un símbolo o carácter especial", hasSpecial),
+      ],
+    );
   }
 }
